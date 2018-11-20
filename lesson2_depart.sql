@@ -1,6 +1,6 @@
 -- MySQL dump 10.13  Distrib 8.0.13, for Win64 (x86_64)
 --
--- Host: localhost    Database: geodata
+-- Host: localhost    Database: lesson2
 -- ------------------------------------------------------
 -- Server version	8.0.13
 
@@ -16,28 +16,28 @@
 /*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
 
 --
--- Table structure for table `_countries`
+-- Table structure for table `depart`
 --
 
-DROP TABLE IF EXISTS `_countries`;
+DROP TABLE IF EXISTS `depart`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
  SET character_set_client = utf8mb4 ;
-CREATE TABLE `_countries` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `title` varchar(150) COLLATE utf8mb4_unicode_ci NOT NULL,
-  PRIMARY KEY (`id`),
-  KEY `title_idx` (`title`) /*!80000 INVISIBLE */
-) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+CREATE TABLE `depart` (
+  `id` int(4) NOT NULL AUTO_INCREMENT,
+  `depname` varchar(25) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `head` int(4) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table `_countries`
+-- Dumping data for table `depart`
 --
 
-LOCK TABLES `_countries` WRITE;
-/*!40000 ALTER TABLE `_countries` DISABLE KEYS */;
-INSERT INTO `_countries` VALUES (1,'Россия'),(2,'Белорусия'),(3,'Казахстан'),(4,'Чехия');
-/*!40000 ALTER TABLE `_countries` ENABLE KEYS */;
+LOCK TABLES `depart` WRITE;
+/*!40000 ALTER TABLE `depart` DISABLE KEYS */;
+INSERT INTO `depart` VALUES (1,'Бухгалтерия',NULL),(2,'АХО',NULL),(3,'ИТ',NULL),(4,'Маркетинг',NULL),(5,'Экономический',NULL),(6,'Служба безопастности',NULL);
+/*!40000 ALTER TABLE `depart` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 
@@ -49,4 +49,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2018-11-18 16:22:45
+-- Dump completed on 2018-11-18 16:21:39

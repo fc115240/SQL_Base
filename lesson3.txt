@@ -1,0 +1,64 @@
+
+База данных «Страны и города мира»:
+1. Сделать запрос, в котором мы выберем все данные о городе – регион, страна.
+SELECT 	_cities.title as city_name, 
+         _regions.title as region_name,
+         _countries.title as country_name
+         FROM _cities
+         INNER JOIN _regions ON _cities.region_id = _regions.id
+         INNER JOIN _countries ON _cities.country_id = _countries.id;
+      
+2. Выбрать все города из Московской области.
+SELECT 	_cities.title as city_name, 
+         _regions.title as region_name,
+         _countries.title as country_name
+         FROM _cities
+         INNER JOIN _regions ON _cities.region_id = _regions.id
+         INNER JOIN _countries ON _cities.country_id = _countries.id
+            where _regions.id = 1;
+
+            
+База данных «Сотрудники»:            
+1. Выбрать среднюю зарплату по отделам.
+SELECT 	depart.id as dep_id,
+         depart.depname as dep_name,
+         avg(salary) as avg_salary
+         FROM depart
+         LEFT JOIN shtat ON depart.id = shtat.otdel
+         GROUP BY depart.id
+         HAVING avg_salary IS NOT NULL;
+
+2. Выбрать максимальную зарплату у сотрудника.
+-- максимальная среди всех сотрудников
+SELECT *
+	FROM   shtat a
+	WHERE  a.salary = ( SELECT MAX(salary) FROM shtat);
+   
+-- максимальная среди сотрудников по каждому отделу
+SELECT a.*, d.depname
+	FROM shtat a
+	LEFT JOIN depart d ON a.otdel = d.id
+	WHERE  a.salary = ( SELECT MAX(salary) FROM shtat b
+							WHERE  b.otdel = a.otdel );
+                     
+3. Удалить одного сотрудника, у которого максимальная зарплата.
+DELETE FROM shtat 
+	ORDER BY salary DESC
+	LIMIT 1;
+
+4. Посчитать количество сотрудников во всех отделах.
+SELECT depart.depname, count(*) as employes FROM shtat
+	LEFT JOIN depart ON depart.id = otdel
+	GROUP BY otdel;
+
+5. Найти количество сотрудников в отделах и посмотреть, сколько всего денег получает отдел.
+SELECT depart.depname, 	
+	count(*) as employes, 
+    sum(salary) as otdel_salary
+	FROM shtat
+	LEFT JOIN depart ON depart.id = otdel
+	GROUP BY otdel;
+
+   
+
+         

@@ -1,6 +1,6 @@
 -- MySQL dump 10.13  Distrib 8.0.13, for Win64 (x86_64)
 --
--- Host: localhost    Database: geodata
+-- Host: localhost    Database: lesson2
 -- ------------------------------------------------------
 -- Server version	8.0.13
 
@@ -16,28 +16,33 @@
 /*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
 
 --
--- Table structure for table `_countries`
+-- Table structure for table `shtat`
 --
 
-DROP TABLE IF EXISTS `_countries`;
+DROP TABLE IF EXISTS `shtat`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
  SET character_set_client = utf8mb4 ;
-CREATE TABLE `_countries` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `title` varchar(150) COLLATE utf8mb4_unicode_ci NOT NULL,
+CREATE TABLE `shtat` (
+  `id` int(4) NOT NULL AUTO_INCREMENT,
+  `firstname` varchar(30) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `lastname` varchar(30) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `birthday` date DEFAULT NULL,
+  `salary` int(10) DEFAULT NULL,
+  `otdel` int(4) DEFAULT NULL,
   PRIMARY KEY (`id`),
-  KEY `title_idx` (`title`) /*!80000 INVISIBLE */
-) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+  KEY `fk_shtat_depart` (`otdel`),
+  CONSTRAINT `fk_shtat_depart` FOREIGN KEY (`otdel`) REFERENCES `depart` (`id`) ON DELETE RESTRICT ON UPDATE CASCADE
+) ENGINE=InnoDB AUTO_INCREMENT=18 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table `_countries`
+-- Dumping data for table `shtat`
 --
 
-LOCK TABLES `_countries` WRITE;
-/*!40000 ALTER TABLE `_countries` DISABLE KEYS */;
-INSERT INTO `_countries` VALUES (1,'Россия'),(2,'Белорусия'),(3,'Казахстан'),(4,'Чехия');
-/*!40000 ALTER TABLE `_countries` ENABLE KEYS */;
+LOCK TABLES `shtat` WRITE;
+/*!40000 ALTER TABLE `shtat` DISABLE KEYS */;
+INSERT INTO `shtat` VALUES (12,'Иван','Иванович','1993-03-03',333,1),(13,'Петр','Петрович','1992-02-02',222,1),(14,'Семен','Семенович','1991-01-01',111,2),(15,'Казимир','Батькович','1994-04-04',444,2),(16,'Кристо́баль ','Хозевич ','1913-11-11',555,3),(17,'Янус ','Полуэктович ','1912-12-12',666,4);
+/*!40000 ALTER TABLE `shtat` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 
@@ -49,4 +54,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2018-11-18 16:22:45
+-- Dump completed on 2018-11-18 16:21:40
