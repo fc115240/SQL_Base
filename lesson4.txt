@@ -1,0 +1,130 @@
+
+
+1. Создать VIEW на основе запросов, которые вы сделали в ДЗ к уроку 3.
+
+-- Сделать запрос, в котором мы выберем все данные о городе – регион, страна.
+CREATE VIEW `view_all_cities` AS 
+SELECT 	_cities.title as city_name, 
+         _regions.title as region_name,
+         _countries.title as country_name
+         FROM _cities
+         INNER JOIN _regions ON _cities.region_id = _regions.id
+         INNER JOIN _countries ON _cities.country_id = _countries.id;
+         
+SELECT * FROM `view_all_cities`;
+
+-- Выбрать все города из Московской области.
+CREATE VIEW `view_moscowreg_cities` AS 
+SELECT 	_cities.title as city_name, 
+         _regions.title as region_name,
+         _countries.title as country_name
+         FROM _cities
+         INNER JOIN _regions ON _cities.region_id = _regions.id
+         INNER JOIN _countries ON _cities.country_id = _countries.id
+            where _regions.id = 1;
+SELECT * FROM `view_moscowreg_cities`;
+
+            
+База данных «Сотрудники»:            
+-- Выбрать среднюю зарплату по отделам.
+CREATE VIEW `view_avg_zp_by_otdel` AS 
+SELECT 	depart.id as dep_id,
+         depart.depname as dep_name,
+         avg(salary) as avg_salary
+         FROM depart
+         LEFT JOIN shtat ON depart.id = shtat.otdel
+         GROUP BY depart.id
+         HAVING avg_salary IS NOT NULL;
+SELECT * FROM `view_avg_zp_by_otdel`;
+
+-- Выбрать максимальную зарплату у сотрудника.
+-- максимальная среди всех сотрудников
+CREATE VIEW `view_max_zp` AS 
+SELECT *
+	FROM   shtat a
+	WHERE  a.salary = ( SELECT MAX(salary) FROM shtat);
+SELECT * FROM `view_max_zp`;
+   
+-- максимальная среди сотрудников по каждому отделу
+CREATE VIEW `view_max_zp_by_otdel` AS 
+SELECT a.*, d.depname
+	FROM shtat a
+	LEFT JOIN depart d ON a.otdel = d.id
+	WHERE  a.salary = ( SELECT MAX(salary) FROM shtat b
+							WHERE  b.otdel = a.otdel );
+SELECT * FROM `view_max_zp_by_otdel`;
+                     
+-- Удалить одного сотрудника, у которого максимальная зарплата.
+CREATE VIEW `view_shtat` AS
+SELECT * FROM shtat;
+DELETE FROM `view_shtat` WHERE `id` = 17;
+
+-- Посчитать количество сотрудников во всех отделах.
+CREATE VIEW `view_employes_count_by_otdel` AS 
+SELECT depart.depname, count(*) as employes FROM shtat
+	LEFT JOIN depart ON depart.id = otdel
+	GROUP BY otdel;
+SELECT * FROM `view_employes_count_by_otdel`;
+
+-- Найти количество сотрудников в отделах и посмотреть, сколько всего денег получает отдел.
+CREATE VIEW `view_zp_by_otdel` AS 
+SELECT depart.depname, 	
+	count(*) as employes, 
+   sum(salary) as otdel_salary
+	FROM shtat
+	LEFT JOIN depart ON depart.id = otdel
+	GROUP BY otdel;
+SELECT * FROM `view_zp_by_otdel`;
+
+
+
+2. Создать функцию, которая найдет менеджера по имени и фамилии.
+
+все таблицы у меня создаются так:
+CREATE SCHEMA `shop` DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+
+для того что бы процедуры и функции работали с русской локалью перед их созданием нужно установить ту же локаль что при создании таблиц:
+SET collation_connection = utf8mb4_unicode_ci;
+SET collation_database = utf8mb4_unicode_ci;
+SET collation_server = utf8mb4_unicode_ci;
+
+
+delimiter $$
+CREATE FUNCTION `find_emploes` (fn VARCHAR(30), ln VARCHAR(30)) 
+RETURNS INT(4)
+READS SQL DATA
+BEGIN
+DECLARE uid INT(4);
+SELECT id INTO uid FROM shtat WHERE firstname = fn and lastname = ln;
+RETURN uid;
+END$$
+delimiter ;
+
+SELECT find_emploes ('Семен','Семенович');
+
+
+
+3. Создать триггер, который при добавлении нового сотрудника будет выплачивать ему вступительный бонус, занося запись об этом в таблицу salary.
+
+CREATE TABLE `salary` (
+   `id` INT(11) PRIMARY KEY AUTO_INCREMENT NOT NULL,
+   `id_sotr` INT(4),
+   `salary` INT(10),
+   `p_date` DATE,
+   `notes` VARCHAR(50));
+   
+CREATE TRIGGER `new_emploer`   
+   AFTER INSERT ON `shtat`
+   FOR EACH ROW
+   INSERT INTO `salary` (`id_sotr`, `salary`, `p_date`, `notes`) VALUES (NEW.id, 10000, NOW(), 'Вступительный бонус');
+
+INSERT INTO `shtat` (`firstname`, `lastname`, `birthday`, `salary`, `otdel` ) VALUES
+('Иван2','Иванович','1993-03-03',331,1),
+('Петр2','Петрович','1992-02-02',221,1),
+('Семен2','Семенович','1991-01-01',110,2),
+('Казимир2','Батькович','1994-04-04',441,2),
+('Кристо́баль2 ','Хозевич ','1913-11-11',551,3),
+('Янус2','Полуэктович ','1912-12-12',888,4);
+
+
+

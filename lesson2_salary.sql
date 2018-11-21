@@ -1,6 +1,6 @@
 -- MySQL dump 10.13  Distrib 8.0.13, for Win64 (x86_64)
 --
--- Host: localhost    Database: geodata
+-- Host: localhost    Database: lesson2
 -- ------------------------------------------------------
 -- Server version	8.0.13
 
@@ -16,35 +16,30 @@
 /*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
 
 --
--- Table structure for table `_cities`
+-- Table structure for table `salary`
 --
 
-DROP TABLE IF EXISTS `_cities`;
+DROP TABLE IF EXISTS `salary`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
  SET character_set_client = utf8mb4 ;
-CREATE TABLE `_cities` (
+CREATE TABLE `salary` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `country_id` int(11) NOT NULL,
-  `important` tinyint(1) NOT NULL,
-  `region_id` int(11) NOT NULL,
-  `title` varchar(150) COLLATE utf8mb4_unicode_ci NOT NULL,
-  PRIMARY KEY (`id`),
-  KEY `title_idx` (`title`) /*!80000 INVISIBLE */,
-  KEY `fk_cities_countries_idx` (`country_id`),
-  KEY `fk_cities_regions_idx` (`region_id`),
-  CONSTRAINT `fk_cities_countries` FOREIGN KEY (`country_id`) REFERENCES `_countries` (`id`) ON DELETE RESTRICT ON UPDATE CASCADE,
-  CONSTRAINT `fk_cities_regions` FOREIGN KEY (`region_id`) REFERENCES `_regions` (`id`) ON DELETE RESTRICT ON UPDATE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+  `id_sotr` int(4) DEFAULT NULL,
+  `salary` int(10) DEFAULT NULL,
+  `p_date` date DEFAULT NULL,
+  `notes` varchar(50) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table `_cities`
+-- Dumping data for table `salary`
 --
 
-LOCK TABLES `_cities` WRITE;
-/*!40000 ALTER TABLE `_cities` DISABLE KEYS */;
-INSERT INTO `_cities` VALUES (1,1,1,1,'Москва'),(2,1,1,2,'Сыктывкар'),(3,1,1,4,'Киров'),(4,4,1,5,'Судеты');
-/*!40000 ALTER TABLE `_cities` ENABLE KEYS */;
+LOCK TABLES `salary` WRITE;
+/*!40000 ALTER TABLE `salary` DISABLE KEYS */;
+INSERT INTO `salary` VALUES (2,20,10000,'2018-11-21','Вступительный бонус'),(3,21,10000,'2018-11-21','Вступительный бонус'),(4,22,10000,'2018-11-21','Вступительный бонус'),(5,23,10000,'2018-11-21','Вступительный бонус'),(6,24,10000,'2018-11-21','Вступительный бонус'),(7,25,10000,'2018-11-21','Вступительный бонус');
+/*!40000 ALTER TABLE `salary` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 
@@ -56,4 +51,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2018-11-21 19:26:36
+-- Dump completed on 2018-11-21 19:26:38

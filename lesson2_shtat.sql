@@ -32,7 +32,7 @@ CREATE TABLE `shtat` (
   PRIMARY KEY (`id`),
   KEY `fk_shtat_depart` (`otdel`),
   CONSTRAINT `fk_shtat_depart` FOREIGN KEY (`otdel`) REFERENCES `depart` (`id`) ON DELETE RESTRICT ON UPDATE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=18 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=26 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -41,7 +41,7 @@ CREATE TABLE `shtat` (
 
 LOCK TABLES `shtat` WRITE;
 /*!40000 ALTER TABLE `shtat` DISABLE KEYS */;
-INSERT INTO `shtat` VALUES (12,'Иван','Иванович','1993-03-03',333,1),(13,'Петр','Петрович','1992-02-02',222,1),(14,'Семен','Семенович','1991-01-01',111,2),(15,'Казимир','Батькович','1994-04-04',444,2),(16,'Кристо́баль ','Хозевич ','1913-11-11',555,3),(17,'Янус ','Полуэктович ','1912-12-12',666,4);
+INSERT INTO `shtat` VALUES (12,'Иван','Иванович','1993-03-03',333,1),(13,'Петр','Петрович','1992-02-02',222,1),(14,'Семен','Семенович','1991-01-01',111,2),(15,'Казимир','Батькович','1994-04-04',444,2),(16,'Кристо́баль ','Хозевич ','1913-11-11',555,3),(17,'Янус ','Полуэктович ','1912-12-12',666,4),(20,'Иван2','Иванович','1993-03-03',331,1),(21,'Петр2','Петрович','1992-02-02',221,1),(22,'Семен2','Семенович','1991-01-01',110,2),(23,'Казимир2','Батькович','1994-04-04',441,2),(24,'Кристо́баль2 ','Хозевич ','1913-11-11',551,3),(25,'Янус2','Полуэктович ','1912-12-12',888,4);
 /*!40000 ALTER TABLE `shtat` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
@@ -54,4 +54,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2018-11-18 16:21:40
+-- Dump completed on 2018-11-21 19:26:38
