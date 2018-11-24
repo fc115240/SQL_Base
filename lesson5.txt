@@ -1,0 +1,118 @@
+
+1. Реализовать практические задания на примере других таблиц и запросов.
+
+-- консоль 1
+mysql> use lesson2;
+Database changed
+mysql> LOCK TABLE `shtat` READ;
+Query OK, 0 rows affected (0.00 sec)
+
+mysql> UNLOCK TABLES;
+Query OK, 0 rows affected (0.00 sec)
+
+-- консоль 2
+mysql> use lesson2;
+Database changed
+mysql> SELECT * FROM `shtat`;
++----+---------------+--------------+------------+--------+-------+
+| id | firstname     | lastname     | birthday   | salary | otdel |
++----+---------------+--------------+------------+--------+-------+
+| 12 | Иван          | Иванович     | 1993-03-03 |    333 |     1 |
+| 13 | Петр          | Петрович     | 1992-02-02 |    222 |     1 |
+| 14 | Семен         | Семенович    | 1991-01-01 |    111 |     2 |
+| 15 | Казимир       | Батькович    | 1994-04-04 |    444 |     2 |
+| 16 | Кристо?баль   | Хозевич      | 1913-11-11 |    555 |     3 |
+| 17 | Янус          | Полуэктович  | 1912-12-12 |    666 |     4 |
+| 38 | Иван2         | Иванович     | 1993-03-03 |    331 |     1 |
+| 39 | Петр2         | Петрович     | 1992-02-02 |    221 |     1 |
+| 40 | Семен2        | Семенович    | 1991-01-01 |    110 |     2 |
+| 41 | Казимир2      | Батькович    | 1994-04-04 |    441 |     2 |
+| 42 | Кристо?баль2  | Хозевич      | 1913-11-11 |    551 |     3 |
+| 43 | Янус2         | Полуэктович  | 1912-12-12 |    888 |     4 |
++----+---------------+--------------+------------+--------+-------+
+12 rows in set (0.00 sec)
+
+mysql> DELETE FROM `shtat` WHERE id=43;
+Query OK, 1 row affected (45.30 sec)
+
+
+
+2. Подумать, какие операции являются транзакционными, и написать несколько примеров с транзакционными запросами.
+
+-- Перераспределение зарплаты внутри организации в пользу бедных (в рамках штата сумма не меняется)
+SELECT SUM(`salary`) FROM `shtat`;
+
+SET TRANSACTION ISOLATION LEVEL REPEATABLE READ;
+SET SQL_SAFE_UPDATES=0;
+BEGIN;
+SELECT @x := MAX(`salary`) FROM `shtat`;
+SELECT @y := MIN(`salary`) FROM `shtat`;
+UPDATE `shtat` SET `salary` = @x - (@x - @y)/2 WHERE `salary` = @x;
+UPDATE `shtat` SET `salary` = @y + (@x - @y)/2 WHERE `salary` = @y;
+COMMIT;
+SET SQL_SAFE_UPDATES=1;
+SET TRANSACTION ISOLATION LEVEL READ COMMITTED;
+
+SELECT SUM(`salary`) FROM `shtat`;
+
+
+-- Увеличение  зарплаты на 10%  всем сотрудникам отдела с наименьшей средней зарплатой
+
+SET TRANSACTION ISOLATION LEVEL REPEATABLE READ;
+SET SQL_SAFE_UPDATES=0;
+BEGIN;
+SET @otdel = 0;
+SELECT otdel INTO @otdel
+	FROM   shtat
+   GROUP BY `otdel`
+   ORDER BY avg(`salary`) ASC
+   LIMIT 1;    
+UPDATE `shtat` SET `salary` = `salary` * 1.1 
+WHERE `otdel` = @otdel;
+COMMIT;
+SET SQL_SAFE_UPDATES=1;
+SET TRANSACTION ISOLATION LEVEL READ COMMITTED;
+
+
+
+3. Проанализировать несколько запросов с помощью EXPLAIN.
+
+3.1
+EXPLAIN SELECT @x := MAX(`salary`) FROM `shtat`;
+'1', 'SIMPLE', 'shtat', NULL, 'ALL', NULL, NULL, NULL, NULL, '11', '100.00', NULL
+
+Добавляем индекс:
+ALTER TABLE `shtat`
+   ADD INDEX `salary` (`salary` ASC) VISIBLE;
+
+Если правильно понимаю то, это значит что все оптимизировано:    
+EXPLAIN SELECT @x := MAX(`salary`) FROM `shtat`;   
+'1', 'SIMPLE', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'Select tables optimized away'
+
+
+3.2
+Найти количество сотрудников в отделах и посмотреть, сколько всего денег получает отдел.
+EXPLAIN SELECT depart.depname, 	
+	count(*) as employes, 
+   sum(salary) as otdel_salary
+	FROM shtat
+	LEFT JOIN depart ON depart.id = otdel
+	GROUP BY otdel;   
+
+'1', 'SIMPLE', 'shtat', NULL, 'ALL', 'fk_shtat_depart', NULL, NULL, NULL, '11', '100.00', 'Using temporary'
+'1', 'SIMPLE', 'depart', NULL, 'eq_ref', 'PRIMARY', 'PRIMARY', '4', 'lesson2.shtat.otdel', '1', '100.00', NULL
+В таблице shtat были просмотрены все строки для подсчета количества служащих в 4х отделах.
+Запрос в таблицу depart, просматривает всего одну строку. Все запросы выполняются по индексам. 
+Не вижу что и как тут можно оптимизировать.
+
+
+3.3 Найти общее количество сотрудников
+EXPLAIN SELECT count(`id`) FROM `shtat`;    
+'1', 'SIMPLE', 'shtat', NULL, 'index', NULL, 'fk_shtat_depart', '5', NULL, '11', '100.00', 'Using index'
+
+EXPLAIN SELECT count(*) FROM `shtat`; 
+'1', 'SIMPLE', 'shtat', NULL, 'index', NULL, 'fk_shtat_depart', '5', NULL, '11', '100.00', 'Using index'
+Судя по всему нет разницы в том считывать количество записей по полю `id` или *
+
+
+   
