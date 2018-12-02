@@ -1,0 +1,12 @@
+
+-- База Geodata
+use geodata
+db.geodata.insert({"country":"Россия","region":"Центральный Федеральный округ","cities":"Москва","population":12506468})
+db.geodata.insert({"country":"Россия","region":"Республика Коми","cities":"Сыктывкар","population":350000})
+db.geodata.insert({"country":"Россия","region":"Республика Коми","cities":"Ыб","population":"513"})
+db.geodata.insert({"country":"Россия","region":"Кировская область","cities":"Киров","population":"650000"})
+
+
+-- дамп базы сделан так
+mongodump --db geodata --out /tmp/mongodb
+ 
