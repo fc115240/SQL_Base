@@ -1,0 +1,71 @@
+
+-- 1. лайки (поставлено/получено/взаимные)
+SELECT u.*, u1.set_like, u2.get_like, u3.mutual_like
+FROM users u
+LEFT JOIN (SELECT l.user_id, count(l.user_id) as set_like
+	FROM likes l
+	LEFT JOIN users u1 ON l.user_id = u1.id
+	GROUP BY l.user_id) u1 ON u.id = u1.user_id
+LEFT JOIN (SELECT l.to_user_id, count(u2.user) as get_like
+	FROM likes l
+	LEFT JOIN users u2 ON l.to_user_id = u2.id
+	GROUP BY l.to_user_id) u2 ON u.id = u2.to_user_id
+LEFT JOIN (SELECT l.user_id, count(l.user_id) as mutual_like 
+	FROM likes l
+	LEFT JOIN users u3 ON l.user_id = u3.id
+	WHERE l.user_id IN (SELECT to_user_id FROM likes GROUP BY to_user_id)
+	GROUP BY user_id) u3 ON u.id = u3.user_id
+;
+
+
+
+-- 2. user 3,6 поставили лайки 1,2 но, не поставили лайки 5
+SELECT u.* 
+FROM users u
+INNER JOIN (SELECT user_id FROM likes WHERE to_user_id = 1) l1 ON u.id = l1.user_id
+INNER JOIN (SELECT user_id FROM likes WHERE to_user_id = 2) l2 ON u.id = l2.user_id
+WHERE id NOT IN (SELECT user_id FROM likes WHERE to_user_id = 5)
+;
+
+
+-- 3. Для сущностей (фото, коммент, и пр.)
+
+-- количество полученых лайков для сущности с id=1
+SELECT count(id)
+FROM essence_likes l
+WHERE l.essence_id = 1
+;
+
+-- список лайкнувших для сущности с id=1
+SELECT u.user
+FROM essence_likes l
+LEFT JOIN users u ON l.user_id = u.id
+WHERE l.essence_id = 1
+;
+
+-- проверить стоит ли лайк пользователя с user_id=6 для сущности с essence_id=6 (если > 0 то лайк уже стоит)
+SELECT IFNULL((SELECT id FROM essence_likes WHERE essence_id = 6 and user_id = 6 LIMIT 1),-1) as result;
+
+-- поставить/убрать лайк пользователя с user_id=6 для сущности с essence_id=6
+Если лайк стоит то он убирается, если не стоит то ставиться, если лайк был удален то возвращаемое значение = -1.
+SELECT set_like(6,6) INTO @y;
+
+--
+delimiter $$
+CREATE FUNCTION `set_like`(uid INT, eid INT) RETURNS tinyint(1)
+    DETERMINISTIC
+BEGIN
+DECLARE x INT;
+SELECT IFNULL((SELECT id FROM essence_likes WHERE essence_id = eid and user_id = uid LIMIT 1),-1) INTO x;
+IF x > 0 THEN
+   DELETE FROM essence_likes WHERE id = x;
+   RETURN -1; 
+ELSE
+   INSERT INTO essence_likes (`user_id`, `essence_id`) VALUES (uid, eid);
+   RETURN 1; 
+END IF;
+END$$
+delimiter ;
+
+
+  
