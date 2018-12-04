@@ -1,0 +1,34 @@
+
+
+-- количество полученых лайков для сущности с id=1
+SELECT count(id) FROM lesson8.likes WHERE essence_id = 1;
+
+-- список лайкнувших для сущности с id=1
+SELECT u.user_name FROM lesson8.likes l
+   LEFT JOIN lesson8.users u ON l.user_id = u.id
+   WHERE l.essence_id = 1;
+
+-- проверить стоит ли лайк пользователя с user_id=6 для сущности с essence_id=6 (если лайка нет вернет null)
+SELECT id FROM lesson8.likes WHERE essence_id = 6 and user_id = 6 LIMIT 1;
+
+-- поставить/убрать лайк пользователя с user_id=6 для сущности с essence_id=6
+Если лайк стоит то он убирается, если не стоит то ставиться, если лайк был удален то возвращаемое значение = -1.
+SELECT lesson8.set_like(6,6);
+
+
+CREATE FUNCTION lesson8.set_like(uid integer, eid integer) RETURNS integer AS $$ 
+DECLARE 
+   x integer;
+BEGIN
+SELECT id INTO x FROM lesson8.likes WHERE essence_id = eid and user_id = uid LIMIT 1;
+IF x IS NULL THEN
+   INSERT INTO lesson8.likes (user_id, essence_id) VALUES (uid, eid);
+   RETURN 1; 
+ELSE
+   DELETE FROM lesson8.likes WHERE id = x;
+   RETURN -1; 
+END IF;
+END; 
+$$ LANGUAGE PLPGSQL;
+
+
